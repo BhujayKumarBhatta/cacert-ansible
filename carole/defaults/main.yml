@@ -1,0 +1,26 @@
+haproxy_ssl_self_signed_subject: 
+  country_name: IN
+  state_name: KARNATAKA
+  location_name: Bangalore
+  organization_name: ITC
+  organizationUnit_name: SDC
+  common_name: "{{ external_lb_vip_address }}"
+haproxy_ssl_self_signed_subject_alternate_names: 
+  IP:
+    - "{{ internal_lb_vip_address }}"
+  DNS: 
+    - hapoxyserver1
+    - haproxyserver1.site
+    - haproxyserver1.site.com
+
+haproxy_CA_private_key: /etc/ssl/private/haproxy_CA.key
+haproxy_CA_cert: /etc/ssl/private/haproxy_CA.cert
+haproxy_ssl_key: /etc/ssl/private/haproxy_ssl.key
+haproxy_ssl_csr_conf: /etc/ssl/private/haproxy_ssl_csr.conf
+haproxy_ssl_csr: /etc/ssl/private/haproxy_ssl.csr
+haproxy_ssl_cert: /etc/ssl/certs/haproxy_ssl.cert
+haproxy_ssl_pem: /etc/ssl/private/haproxy.pem
+haproxy_ssl_ca_cert: /etc/ssl/certs/haproxy-ca.pem
+
+external_lb_vip_address: 14.142.104.140
+internal_lb_vip_address: 10.0.0.14

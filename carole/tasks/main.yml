@@ -1,0 +1,51 @@
+---
+- name: Create CA  private key 
+  openssl_privatekey:
+    path: "{{ haproxy_CA_private_key }}"
+    size: 2048 
+
+- name: Create CA certificate
+  command: >
+    openssl req -x509 -new -nodes  -subj
+    "/CN={{ haproxy_ssl_self_signed_subject.common_name }}"
+    -days 3650
+    -key "{{ haproxy_CA_private_key }}"
+    -out "{{ haproxy_CA_cert }}"
+    creates={{ haproxy_CA_cert }}
+
+- name: Create Haproxy Server Key 
+  openssl_privatekey:
+    path: "{{ haproxy_ssl_key }}"
+    size: 2048 
+
+- name: Generate Configuration file for Certificate Signing Request 
+  template:
+    src: haproxy_csr.conf.j2
+    dest: "{{ haproxy_ssl_csr_conf }}"
+
+- name: Generate Certificate Signing Request for the Server Key
+  command: >
+    openssl req -new 
+    -key "{{ haproxy_CA_private_key }}"
+    -out "{{ haproxy_ssl_csr }}"
+    -config "{{ haproxy_ssl_csr_conf }}"  
+    creates={{ haproxy_ssl_csr }}
+
+- name: Generate Server Certificate  
+  command: >
+   openssl x509 -req 
+   -CAkey "{{ haproxy_CA_private_key }}" 
+   -CA "{{ haproxy_CA_cert }}" 
+   -CAcreateserial 
+   -in "{{ haproxy_ssl_csr }}"
+   -out "{{ haproxy_ssl_cert }}" 
+   -days 3650 
+   -extensions v3_ext 
+   -extfile "{{ haproxy_ssl_csr_conf }}" 
+   creates={{ haproxy_ssl_cert }}
+
+
+
+#root@haproxy1:/etc/ssl/certs# cp  ~/bbsrv1.crt  haproxy.cert
+#root@haproxy1:/etc/ssl/private# cp ~/bbsrv.key haproxy.key
+#root@haproxy1:/etc/ssl/private# cat ../certs/haproxy.cert ~/bb.cert  haproxy.key > haproxy.pem
