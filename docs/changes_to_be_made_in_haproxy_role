@@ -1,0 +1,204 @@
+1. include in default/main.yml
+#######################################################################
+haproxy_ssl_self_signed_subject:
+  country_name: US
+  state_name: Texas
+  location_name: San Antonio
+  organization_name: IT
+  organizationUnit_name: IT
+  common_name: "{{ external_lb_vip_address }}"
+haproxy_ssl_self_signed_subject_alternate_names:
+  IP:
+    - "{{ internal_lb_vip_address }}"
+  #DNS:
+  #  - hapoxyserver1
+  #  - haproxyserver1.site
+  #  - haproxyserver1.site.com
+
+
+
+
+haproxy_CA_private_key: /etc/ssl/private/haproxy_CA.key
+haproxy_CA_cert: /etc/ssl/certs/haproxy_CA.cert
+haproxy_ssl_csr_conf: /etc/ssl/private/haproxy_ssl_csr.conf
+haproxy_ssl_csr: /etc/ssl/private/haproxy_ssl.csr
+
+
+2.  in user_var
+################################################################################
+haproxy_ssl_self_signed_subject:
+  country_name: IN
+  state_name: KARNATAKA
+  location_name: Bangalore
+  organization_name: ITC
+  organizationUnit_name: SDC
+  common_name: "{{ external_lb_vip_address }}"
+haproxy_ssl_self_signed_subject_alternate_names:
+  IP:
+    - "{{ internal_lb_vip_address }}"
+
+3.  vi  carole/templates/haproxy_csr.conf.j2
+#############################################################################
+
+[ req ]
+default_bits = 2048
+prompt = no
+default_md = sha256
+req_extensions = req_ext
+distinguished_name = dn
+
+[ dn ]
+C = {{ haproxy_ssl_self_signed_subject.country_name }}
+ST = {{ haproxy_ssl_self_signed_subject.state_name }}
+L = {{ haproxy_ssl_self_signed_subject.location_name }}
+O = {{ haproxy_ssl_self_signed_subject.organization_name }}
+OU = {{ haproxy_ssl_self_signed_subject.organizationUnit_name }}
+CN = {{ haproxy_ssl_self_signed_subject.common_name }}
+
+[ req_ext ]
+subjectAltName = @alt_names
+
+[ alt_names ]
+{% if (haproxy_ssl_self_signed_subject_alternate_names.IP is defined)
+  and (haproxy_ssl_self_signed_subject_alternate_names.IP)  %}
+{% for ipaddr in haproxy_ssl_self_signed_subject_alternate_names.IP %}
+IP.{{ loop.index }} = {{ ipaddr }}
+{% endfor %}
+{% endif %}
+{% if (haproxy_ssl_self_signed_subject_alternate_names.DNS is defined)
+  and (haproxy_ssl_self_signed_subject_alternate_names.DNS)  %}
+{% for dns in haproxy_ssl_self_signed_subject_alternate_names.DNS %}
+DNS.{{ loop.index }} = {{ dns }}
+{% endfor %}
+{% endif %}
+
+[ v3_ext ]
+authorityKeyIdentifier=keyid,issuer:always
+basicConstraints=CA:FALSE
+keyUsage=keyEncipherment,dataEncipherment
+extendedKeyUsage=serverAuth,clientAuth
+subjectAltName=@alt_names
+
+4. changes in  tasks/haproxy_ssl_key_create.yml
+######################################################################
+
+- name: Remove self signed certs and keys for regen
+  file:
+    dest: "{{ item }}"
+    state: "absent"
+
+  with_items:
+    - "{{ haproxy_ssl_pem }}"
+    - "{{ haproxy_ssl_key }}"
+    - "{{ haproxy_ssl_cert }}"
+    - "{{ haproxy_ssl_csr_conf }}"
+    - "{{ haproxy_ssl_csr }}"
+    - "{{ haproxy_CA_private_key }}"
+    - "{{ haproxy_CA_cert }}"
+  when: haproxy_ssl_self_signed_regen | bool
+  tags:
+    - haproxy-ssl
+
+
+- name: Create CA  private key
+  command: >
+    openssl genrsa -out "{{ haproxy_CA_private_key }}" 2048
+    creates={{ haproxy_CA_private_key }}   
+  tags:
+    - haproxy-ssl
+
+- name: Create CA certificate
+  command: >
+    openssl req -x509 -new -nodes  -subj
+    "/CN={{ haproxy_ssl_self_signed_subject.common_name }}"
+    -days 3650
+    -key "{{ haproxy_CA_private_key }}"
+    -out "{{ haproxy_CA_cert }}"
+    creates={{ haproxy_CA_cert }}
+  tags:
+    - haproxy-ssl
+
+- name: Create Haproxy Server Key
+  command: >
+    openssl genrsa -out "{{ haproxy_ssl_key }}" 2048
+  creates={{ haproxy_ssl_key }}   
+  tags:
+    - haproxy-ssl
+
+- name: Generate Configuration file for Certificate Signing Request
+  template:
+    src: haproxy_csr.conf.j2
+    dest: "{{ haproxy_ssl_csr_conf }}"
+  tags:
+    - haproxy-ssl
+
+- name: Generate Certificate Signing Request for the Server Key
+  command: >
+    openssl req -new
+    -key "{{ haproxy_ssl_key }}"
+    -out "{{ haproxy_ssl_csr }}"
+    -config "{{ haproxy_ssl_csr_conf }}"
+    creates={{ haproxy_ssl_csr }}
+  tags:
+    - haproxy-ssl
+
+- name: Generate Server Certificate
+  command: >
+   openssl x509 -req
+   -CAkey "{{ haproxy_CA_private_key }}"
+   -CA "{{ haproxy_CA_cert }}"
+   -CAcreateserial
+   -in "{{ haproxy_ssl_csr }}"
+   -out "{{ haproxy_ssl_cert }}"
+   -days 3650
+   -extensions v3_ext
+   -extfile "{{ haproxy_ssl_csr_conf }}"
+   creates={{ haproxy_ssl_cert }}
+  notify:
+    - regen pem
+  tags:
+    - haproxy-ssl
+
+
+5.  vi   tasks/haproxy_ssl_key_store.yml
+
+###############################################################################################
+
+- name: Store CA Cert 
+  slurp:
+    src: "{{ haproxy_CA_cert }}"
+  register: _haproxy_CA_cert
+
+- name: Register a fact for the cert and key
+  set_fact:
+    haproxy_CA_cert_fact: "{{ _haproxy_CA_cert.content }}"  <============== add only this line
+    haproxy_ssl_cert_fact: "{{ _haproxy_ssl_cert.content }}"
+    haproxy_ssl_key_fact: "{{ _haproxy_ssl_key.content }}"
+
+6. vi tasks/haproxy_ssl_key_distribute.yml
+
+##############################################################################################
+
+- name: Distribute self signed CA cert
+  copy:
+    dest: "{{ haproxy_CA_cert }}"
+    content: "{{ hostvars[groups['haproxy_all'][0]]['haproxy_CA_cert_fact'] | b64decode }}"
+    mode: "0640"
+  when: hostvars[groups['haproxy_all'][0]]['haproxy_CA_cert_fact'] is defined
+  notify:
+    - regen pem
+  tags:
+    - haproxy-ssl
+
+7. vi handlers/main.yml
+
+- name: regen pem
+  shell: >
+    cat {{ haproxy_ssl_cert }} {{ haproxy_user_ssl_ca_cert is defined | ternary(haproxy_ssl_ca_cert,'') }} {{ haproxy_CA_cert }} {{ haproxy_ssl_key }} > {{ haproxy_ssl_pem }}
+  notify: Restart haproxy
+
+
+    
+
+
+
