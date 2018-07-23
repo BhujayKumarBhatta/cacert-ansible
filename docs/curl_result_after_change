@@ -1,0 +1,105 @@
+bhujay@DESKTOP-DTA1VEB:/mnt/c/Users/Bhujay K Bhatta/git/cacert-ansible/docs$ openssl s_client -connect 14.142.104.140:443 -showcerts </dev/null 2>/dev/null| openssl x509 -outform PEM >cert_from_haproxy_after_chnage.pem
+bhujay@DESKTOP-DTA1VEB:/mnt/c/Users/Bhujay K Bhatta/git/cacert-ansible/docs$ openssl x509 -text -noout -in cert_from_haproxy_after_chnage.pem
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 15987406015832481559 (0xdddead1105a35f17)
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: CN=14.142.104.140
+        Validity
+            Not Before: Jul 23 11:03:30 2018 GMT
+            Not After : Jul 20 11:03:30 2028 GMT
+        Subject: C=IN, ST=KARNATAKA, L=Bangalore, O=ITC, OU=SDC, CN=14.142.104.140
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (2048 bit)
+                Modulus:
+                    00:b9:b7:88:de:9a:83:a4:2d:32:75:31:36:2f:39:
+                    4f:67:e6:c5:a4:b8:ea:ed:18:13:7c:3a:a6:95:49:
+                    45:17:2d:0f:ab:2a:83:b8:73:93:6a:95:3d:68:69:
+                    da:36:49:02:1c:57:ee:21:99:0a:20:d6:66:d7:12:
+                    a6:d8:04:4e:74:43:58:f6:d3:6d:0d:6f:ff:12:e4:
+                    d7:91:ad:44:d4:c5:3e:3b:53:8f:ca:ed:14:84:bd:
+                    cb:b3:a9:88:14:64:52:4a:4b:f0:4e:09:56:86:8c:
+                    a5:ec:21:35:ee:63:ab:22:cf:44:c1:ab:ea:94:83:
+                    e7:75:e8:16:7e:9e:fa:5c:38:7a:fc:f0:a0:1c:67:
+                    90:1d:fb:54:b5:1c:6e:83:31:4d:c1:51:6c:c4:de:
+                    23:fa:b5:af:06:6e:ca:20:83:a8:4d:a4:99:18:bc:
+                    1d:a9:1c:65:ae:25:ff:06:df:c9:b1:73:6f:bb:58:
+                    3c:76:22:4c:36:71:68:00:94:c0:a4:63:3f:b8:15:
+                    60:0c:9f:62:27:c4:29:27:b8:82:75:50:85:21:91:
+                    de:f1:08:25:58:0b:c9:98:7a:99:4e:52:b8:ae:42:
+                    33:9e:d2:a9:76:4f:ab:82:af:75:54:6d:73:4e:16:
+                    a2:b2:18:4d:e0:1e:0b:d9:e1:06:e0:45:53:a8:bf:
+                    94:ef
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Authority Key Identifier:
+                keyid:E6:C0:F9:8C:C5:DC:69:99:5A:00:6D:29:9F:91:96:C6:9C:52:CD:D3
+                DirName:/CN=14.142.104.140
+                serial:FD:52:7A:AE:2B:9F:7E:1C
+
+            X509v3 Basic Constraints:
+                CA:FALSE
+            X509v3 Key Usage:
+                Key Encipherment, Data Encipherment
+            X509v3 Extended Key Usage:
+                TLS Web Server Authentication, TLS Web Client Authentication
+            X509v3 Subject Alternative Name:
+                IP Address:10.0.0.14
+    Signature Algorithm: sha256WithRSAEncryption
+         ae:2b:35:ae:65:57:20:b0:04:a0:ec:0d:ec:2b:11:97:cc:e1:
+         a9:9d:34:28:a4:bf:71:4b:ca:39:e3:c6:27:8e:60:86:94:38:
+         87:a6:2d:0f:a8:75:2a:33:4f:bd:00:5c:57:98:ae:93:d1:38:
+         e7:97:c5:f2:41:e8:b1:24:ab:4c:95:41:c1:f4:a7:f9:02:2e:
+         0e:c0:de:71:3e:5f:4c:9a:67:38:29:76:5b:2a:b6:f4:ca:36:
+         b3:39:67:d2:38:b3:3a:e2:c5:8d:e0:3f:4f:94:4d:e7:3b:9b:
+         5f:d3:df:92:71:2f:c4:e7:2d:b7:86:cc:da:a2:ec:90:40:12:
+         fb:db:4a:5b:84:87:af:60:df:b3:8b:93:b6:d4:65:c8:17:ee:
+         90:d3:7f:dc:a9:e6:ef:f9:76:61:11:c5:01:5a:78:a2:f4:1f:
+         bd:1e:18:34:0b:11:17:c7:e0:09:dd:83:fc:40:6f:2e:98:d4:
+         d0:9f:d4:91:d1:38:33:78:9f:16:de:52:58:6c:d0:6d:2b:3c:
+         3c:0a:db:47:3a:96:63:dc:52:cf:d7:63:76:c6:33:80:8e:c3:
+         18:6c:06:be:bf:8e:a2:a3:50:8e:84:d0:06:2a:09:4a:29:af:
+         7e:f1:bb:73:24:2a:cb:5b:88:76:93:e6:80:ca:9e:6b:18:18:
+         0c:66:ea:f8
+bhujay@DESKTOP-DTA1VEB:/mnt/c/Users/Bhujay K Bhatta/git/cacert-ansible/docs$
+
+bhujay@DESKTOP-DTA1VEB:/mnt/c/Users/Bhujay K Bhatta/git/cacert-ansible/docs$ curl -v --cacert cert_from_haproxy_after_chnage.pem https://14.142.104.140
+* Rebuilt URL to: https://14.142.104.140/
+*   Trying 14.142.104.140...
+* Connected to 14.142.104.140 (14.142.104.140) port 443 (#0)
+* found 1 certificates in cert_from_haproxy_after_chnage.pem
+* found 592 certificates in /etc/ssl/certs
+* ALPN, offering http/1.1
+* SSL connection using TLS1.2 / ECDHE_RSA_AES_256_GCM_SHA384
+*        server certificate verification OK
+*        server certificate status verification SKIPPED
+*        common name: 14.142.104.140 (matched)
+*        server certificate expiration date OK
+*        server certificate activation date OK
+*        certificate public key: RSA
+*        certificate version: #3
+*        subject: C=IN,ST=KARNATAKA,L=Bangalore,O=ITC,OU=SDC,CN=14.142.104.140
+*        start date: Mon, 23 Jul 2018 11:03:30 GMT
+*        expire date: Thu, 20 Jul 2028 11:03:30 GMT
+*        issuer: CN=14.142.104.140
+*        compression: NULL
+* ALPN, server did not agree to a protocol
+> GET / HTTP/1.1
+> Host: 14.142.104.140
+> User-Agent: curl/7.47.0
+> Accept: */*
+>
+< HTTP/1.1 302 Found
+< Date: Mon, 23 Jul 2018 11:11:18 GMT
+< Server: Apache
+< Content-Language: en
+< Vary: Accept-Language,Cookie
+< X-Frame-Options: SAMEORIGIN
+< Content-Length: 0
+< Location: https://14.142.104.140/auth/login/?next=/
+< Content-Type: text/html; charset=utf-8
+<
+* Connection #0 to host 14.142.104.140 left intact
+
