@@ -1,0 +1,78 @@
+bhujay@DESKTOP-DTA1VEB:/mnt/c/Users/Bhujay K Bhatta/git/cacert-ansible/docs$ openssl s_client -connect 14.142.104.140:443 -showcerts </dev/null 2>/dev/null| openssl x509 -outform PEM >cert_from_haproxy.
+bhujay@DESKTOP-DTA1VEB:/mnt/c/Users/Bhujay K Bhatta/git/cacert-ansible/docs$ openssl s_client -connect 14.142.104.140:443 -showcerts </dev/null 2>/dev/null| openssl x509 -outform PEM >cert_from_haproxy.pem
+bhujay@DESKTOP-DTA1VEB:/mnt/c/Users/Bhujay K Bhatta/git/cacert-ansible/docs$ ls -l
+total 8
+-rwxrwxrwx 1 bhujay bhujay 1359 Jul 23 12:55 cert_from_haproxy.
+-rwxrwxrwx 1 bhujay bhujay 1359 Jul 23 12:56 cert_from_haproxy.pem
+bhujay@DESKTOP-DTA1VEB:/mnt/c/Users/Bhujay K Bhatta/git/cacert-ansible/docs$ curl -v --cacert cert_from_haproxy.pem https://14.142.104.140
+* Rebuilt URL to: https://14.142.104.140/
+*   Trying 14.142.104.140...
+* Connected to 14.142.104.140 (14.142.104.140) port 443 (#0)
+* found 1 certificates in cert_from_haproxy.pem
+* found 592 certificates in /etc/ssl/certs
+* ALPN, offering http/1.1
+* SSL connection using TLS1.2 / ECDHE_RSA_AES_256_GCM_SHA384
+*        server certificate verification OK
+*        server certificate status verification SKIPPED
+* SSL: certificate subject name (10.0.0.14) does not match target host name '14.142.104.140'
+* Closing connection 0
+curl: (51) SSL: certificate subject name (10.0.0.14) does not match target host name '14.142.104.140'
+
+
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 13710341740754498799 (0xbe44eb2c36e1f4ef)
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C=IN, ST=Karnataka, L=Bangalore, O=ITC, CN=10.0.0.14/subjectAltName=IP.1=14.142.104.140
+        Validity
+            Not Before: Jul 18 09:08:14 2018 GMT
+            Not After : Jul 15 09:08:14 2028 GMT
+        Subject: C=IN, ST=Karnataka, L=Bangalore, O=ITC, CN=10.0.0.14/subjectAltName=IP.1=14.142.104.140
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (2048 bit)
+                Modulus:
+                    00:ba:af:52:7b:e0:c2:f9:99:ef:f1:6c:a0:6c:b7:
+                    67:59:5a:93:e4:f0:61:11:05:81:bc:b5:fb:71:aa:
+                    5b:27:5f:b3:ab:be:b0:86:c4:e5:1b:3a:99:c8:da:
+                    87:30:55:34:03:00:67:5f:f9:5f:82:b8:5d:64:22:
+                    b2:53:f5:c0:52:87:fa:7b:e9:05:8b:c3:27:d8:28:
+                    e2:d5:e5:85:b8:d6:3d:af:db:90:31:19:40:cf:07:
+                    75:83:95:99:de:99:b5:e1:1d:98:bf:2e:79:12:f4:
+                    7c:dd:4d:3b:23:3f:95:de:ef:be:c9:41:47:2e:29:
+                    5a:a0:c1:b1:d2:c3:38:75:b5:b4:1d:92:84:1d:7a:
+                    02:c7:82:a2:44:63:6f:54:03:61:32:8f:06:2e:91:
+                    e5:3c:48:70:b6:65:a3:1b:68:f7:b8:b0:73:2b:cd:
+                    45:0c:66:69:23:1a:77:8f:a1:7f:4c:4a:bc:4f:d8:
+                    fd:f3:c1:d7:37:f5:7d:aa:dd:c8:af:75:1c:23:ac:
+                    e9:ba:cd:76:cb:1d:29:dc:17:ff:d5:90:1e:36:e4:
+                    96:fc:1d:c6:0e:bf:00:c3:28:61:2f:bc:ac:a2:8d:
+                    99:6a:62:1a:25:d2:28:51:ab:2c:cd:b1:9f:5a:b7:
+                    2f:67:9b:35:19:1f:ab:50:d2:b9:19:95:48:80:c2:
+                    5f:ef
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Subject Key Identifier:
+                F5:EA:8B:96:5C:C3:0C:17:E6:71:DC:49:C4:D5:09:F3:C3:76:F8:59
+            X509v3 Authority Key Identifier:
+                keyid:F5:EA:8B:96:5C:C3:0C:17:E6:71:DC:49:C4:D5:09:F3:C3:76:F8:59
+
+            X509v3 Basic Constraints:
+                CA:TRUE
+    Signature Algorithm: sha256WithRSAEncryption
+         56:17:2e:09:30:ea:1b:b3:dd:e8:3d:c5:e5:60:a6:89:9f:9c:
+         f7:4a:da:e2:59:52:d4:87:75:45:3c:57:b4:40:89:b1:d1:73:
+         2f:4f:3b:54:a2:e3:84:8f:be:fc:79:ab:c3:11:c5:5b:a2:57:
+         27:e6:f5:45:7c:70:16:76:bd:ed:59:5f:a3:9f:b4:c8:74:11:
+         0b:29:0b:1e:d2:36:cb:0f:9d:8a:d0:83:75:1a:5a:ad:7a:d1:
+         98:48:f6:ec:75:77:be:10:43:32:82:fe:27:27:71:00:2b:ac:
+         a1:24:c3:95:4c:0e:63:66:d4:c5:2c:14:d2:39:9d:d1:d5:47:
+         c3:0f:71:2f:56:f9:d9:34:00:72:e8:68:93:5e:fe:de:60:e1:
+         7f:f4:e7:bd:80:a3:18:05:35:bc:67:27:ae:24:41:be:73:59:
+         89:43:0e:fd:38:5e:19:d7:69:2d:92:4a:54:14:0e:1d:4d:7a:
+         49:4d:33:47:b8:eb:a1:8f:f6:1d:61:34:bc:e8:8f:d2:9f:5b:
+         3c:5f:92:10:ae:a3:8d:cd:80:0d:31:4c:6d:74:fa:b0:9e:cc:
+         1e:43:c1:fd:52:79:d0:37:7e:eb:8b:6f:1f:01:cf:71:3b:f3:
+         12:97:54:01:72:6d:3c:1c:16:5d:e5:c0:be:0e:d2:f4:f0:14:
+         d2:7d:36:54
